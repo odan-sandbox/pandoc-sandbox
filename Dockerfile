@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 
 RUN apt update && \
-    apt install -y texlive texlive-lang-cjk && \
+    apt install -y texlive texlive-latex-extra texlive-bibtex-extra texlive-lang-japanese && \
     apt install -y locales zlib1g-dev xz-utils gcc make haskell-stack --no-install-recommends && \
     apt-get clean && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 
