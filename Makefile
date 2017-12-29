@@ -24,6 +24,7 @@ pdf: $(TEX_FILES)
 
 clean:
 	- rm -rf main.bbl main.aux main.bcf main.log main.dvi main.pdf main.run.xml	
+	- rm -rf $(TARGET)
 	- rm -rf $(OUTDIR)
 
 .PHONY:

@@ -33,6 +33,7 @@ RUN mkdir -p $HOME/.stack/global-project
 ADD stack.yaml $HOME/.stack/global-project
 RUN stack install pandoc pandoc-citeproc pandoc-crossref
 
+WORKDIR /home/user/work
 
 ENTRYPOINT ["tini", "--"]
 CMD ["run.sh"]
