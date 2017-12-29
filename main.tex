@@ -1,15 +1,22 @@
 \documentclass[10.5pt,a4paper]{jarticle}
 %
+\PassOptionsToPackage{dvipdfmx}{graphicx}
+
 \usepackage{amsmath,amssymb}
 \usepackage{bm}
-\usepackage[dvipdfmx]{graphicx}
+\usepackage[dvipdfmx]{graphicx, hyperref}
 \usepackage{ascmac}
 \usepackage{framed}
 \usepackage{calc}
 \usepackage{here}
 \usepackage{tabularx}
+\usepackage[utf8]{inputenc}
 
 \usepackage{main}
+\usepackage{syntax}
+
+% ref: https://qiita.com/Selene-Misso/items/6c27a4a0947f10af3119
+\def\tightlist{\itemsep1pt\parskip0pt\parsep0pt}
 
 \title{たいとる}
 \author{書き手}
@@ -18,6 +25,15 @@
 \begin{document}
 \maketitle
 
-\include{intro}
+\input{build/intro}
+
+\newpage
+
+\input{build/odan}
+
+\newpage
+
+\input{build/code_test}
+
 
 \end{document}
