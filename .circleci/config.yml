@@ -1,21 +1,21 @@
 version: 2
     jobs:
-    build:
-        docker:
-            - image: docker:17.05.0-ce-git
-        steps:
-            - checkout
-            - setup_remote_docker
-            - restore_cache:
-                keys:
-                    - docker-cache-{{ .Branch }}
-                    - docker-cache
+        build:
+            docker:
+                - image: docker:17.05.0-ce-git
+            steps:
+                - checkout
+                - setup_remote_docker
+                - restore_cache:
+                    keys:
+                        - docker-cache-{{ .Branch }}
+                        - docker-cache
 
-            - run: if test -d ~/cache; then docker load -i ~/cache/image.tar; fi
-            - run: docker build -t pandoc .
-            - run: mkdir -p ~/cache && docker save -o ~/cache/image.tar pandoc $(docker history -q pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
+                - run: if test -d ~/cache; then docker load -i ~/cache/image.tar; fi
+                - run: docker build -t pandoc .
+                - run: mkdir -p ~/cache && docker save -o ~/cache/image.tar pandoc $(docker history -q pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
 
-            - save_cache:
-                key: docker-cache-{{ .Branch }}-{{ checksum "~/cache/image.tar" }}
-                paths:
-                    - ~/cache
+                - save_cache:
+                    key: docker-cache-{{ .Branch }}-{{ checksum "~/cache/image.tar" }}
+                    paths:
+                        - ~/cache
