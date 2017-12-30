@@ -31,7 +31,8 @@ USER $NB_USER
 RUN mkdir -p $HOME/.stack/global-project
 ADD stack.yaml $HOME/.stack/global-project
 RUN stack setup && \
-    stack install pandoc-1.19.2.4 pandoc-citeproc-0.10.5.1 pandoc-crossref-0.2.7.0
+    stack install pandoc-1.19.2.4 pandoc-citeproc-0.10.5.1 pandoc-crossref-0.2.7.0 && \
+    rm -rf $HOME/.stack
 
 WORKDIR /home/user/work
 
