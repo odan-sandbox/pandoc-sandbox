@@ -11,7 +11,7 @@ $(OUTDIR)/%.tex: %/*
 	mkdir -p $(OUTDIR)
 	$(eval DIR_NAME=$(word 1, $(dir $^)))
 
-	$(eval MD_FILES=$(wildcard $(DIR_NAME)/*.md))
+	$(eval MD_FILES=$(sort $(wildcard $(DIR_NAME)/*.md)))
 
 	$(eval BIB_FILE=$(DIR_NAME)/$(DIR_NAME).bib)
 	$(eval CITE_OPTION=$(shell if [ -f $(BIB_FILE) ]; then echo --bibliography=$(BIB_FILE); else echo ; fi))
