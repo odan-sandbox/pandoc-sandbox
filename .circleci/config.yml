@@ -28,6 +28,11 @@ jobs:
             - image: odanado/pandoc
         steps:
             - setup_remote_docker
+            - restore_cache:
+                keys:
+                    - docker-cache-{{ .Branch }}
+                    - docker-cache
+            - run: docker load -i ~/cache/image.tar
             - run: docker run --user=root --rm -it -v $PWD:/home/user/work odanado/pandoc run.sh make
 
 workflows:
