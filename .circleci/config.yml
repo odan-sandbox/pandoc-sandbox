@@ -25,7 +25,6 @@ jobs:
         machine: true
         steps:
             - checkout
-            - setup_remote_docker
             - restore_cache:
                 key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
                 path: ~/cache
