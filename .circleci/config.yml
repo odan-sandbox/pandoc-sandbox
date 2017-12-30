@@ -5,16 +5,47 @@ jobs:
         machine: true
         steps:
             - checkout
+            - run:
+                name: Install Docker Compose
+                command: |
+                    set -x
+                    curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+                    chmod +x /usr/local/bin/docker-compose
             - restore_cache:
-                key: docker-{{ checksum "Dockerfile" }}
-                path: ~/cache/image.tar
+                key: docker-{{ checksum "Dockerfile.base" }}
+                path: ~/cache/base-image.tar
+            - restore_cache:
+                key: docker-{{ checksum "Dockerfile.pandoc" }}
+                path: ~/cache/pandoc-image.tar
+            - restore_cache:
+                key: docker-{{ checksum "Dockerfile.texlive" }}
+                path: ~/cache/texlive-image.tar
 
-            - run: if test -d ~/cache; then docker load -i ~/cache/image.tar; fi
-            - run: docker build -t odanado/pandoc .
-            - run: mkdir -p ~/cache && docker save -o ~/cache/image.tar odanado/pandoc $(docker history -q odanado/pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
+            - run:
+                name: load docker cache
+                command: |
+                    if test -d ~/cache; then
+                        docker load -i ~/cache/base-image.tar;
+                        docker load -i ~/cache/pandoc-image.tar;
+                        docker load -i ~/cache/texlive-image.tar;
+                    fi
+            - run: make docker
+            - run:
+                name: save docker cache
+                command: |
+                    mkdir -p ~/cache
+                    docker -save -o ~/cache/base-image.tar odanado/book:base
+                    docker -save -o ~/cache/pandoc-image.tar odanado/book:pandoc
+                    docker -save -o ~/cache/texlive-image.tar odanado/book:texlive
 
             - save_cache:
-                key: docker-{{ checksum "Dockerfile" }}
+                key: docker-{{ checksum "Dockerfile.base" }}
+                paths: ~/cache
+            - save_cache:
+                key: docker-{{ checksum "Dockerfile.pandoc" }}
+                paths: ~/cache
+            - save_cache:
+                key: docker-{{ checksum "Dockerfile.texlive" }}
                 paths: ~/cache
 
     
@@ -24,12 +55,20 @@ jobs:
         steps:
             - checkout
             - restore_cache:
-                key: docker-{{ checksum "Dockerfile" }}
+                key: docker-{{ checksum "Dockerfile.pandoc" }}
+                path: ~/cache
+            - restore_cache:
+                key: docker-{{ checksum "Dockerfile.texlive" }}
                 path: ~/cache
 
-            - run: docker load -i ~/cache/image.tar
-            - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc run.sh make
-            - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc run.sh make html
+            - run:
+                name: load docker cache
+                command: |
+                    docker load -i ~/cache/pandoc-image.tar
+                    docker load -i ~/cache/texlive-image.tar
+            
+            - run: make pdf
+            - run: make html
 
             - store_artifacts:
                 path: ~/work/main.pdf
