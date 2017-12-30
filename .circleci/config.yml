@@ -64,3 +64,6 @@ workflows:
             - deploy-gh-pages:
                 requires:
                     - build-book
+                filters:
+                    branches:
+                        only: master
