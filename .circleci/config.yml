@@ -6,7 +6,7 @@ jobs:
         steps:
             - checkout
             - restore_cache:
-                key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
+                key: docker-{{ checksum "Dockerfile" }}
                 path: ~/cache/image.tar
 
             - run: if test -d ~/cache; then docker load -i ~/cache/image.tar; fi
@@ -14,30 +14,56 @@ jobs:
             - run: mkdir -p ~/cache && docker save -o ~/cache/image.tar odanado/pandoc $(docker history -q odanado/pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
 
             - save_cache:
-                key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
+                key: docker-{{ checksum "Dockerfile" }}
                 paths: ~/cache
 
     
-    build-pdf:
+    build-book:
         working_directory: ~/work
         machine: true
         steps:
             - checkout
             - restore_cache:
-                key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
+                key: docker-{{ checksum "Dockerfile" }}
                 path: ~/cache
 
             - run: docker load -i ~/cache/image.tar
-            - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc-sandbox run.sh make
+            - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc run.sh make
+            - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc run.sh make html
 
             - store_artifacts:
-                path: /src/main.pdf
+                path: ~/work/main.pdf
+
+            - save_cache:
+                key: build
+                paths: ~/work/build
+
+    deploy-gh-pages:
+        working_directory: ~/work/build
+        machine: true
+        steps:
+            - restore_cache:
+                key: build
+            - run: git init .
+            - run: git config --global user.name "circle ci"
+            - run: git config --global user.email "odan3240@gmail.com"
+            - run: git checkout -b gh-pages
+            - run: git add *.html
+            - run: git commit -m 'Update [ci skip]'
+            - run: git push -f git@github.com:odanado/pandoc-sandbox.git gh-pages
+
 
 workflows:
     version: 2
     flow:
         jobs:
             - build
-            - build-pdf:
+            - build-book:
                 requires:
                     - build 
+            - deploy-gh-pages:
+                requires:
+                    - build-book
+                filters:
+                    branches:
+                        only: master
