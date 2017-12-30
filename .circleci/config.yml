@@ -6,20 +6,19 @@ jobs:
             - image: docker:17.05.0-ce-git
         steps:
             - checkout
-            - setup_remote_docker
+            - setup_remote_docker:
+                docker_layer_caching: true
             - restore_cache:
-                keys:
-                    - docker-cache-{{ .Branch }}
-                    - docker-cache
+                key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
+                path: ~/cache/images.tar
 
             - run: if test -d ~/cache; then docker load -i ~/cache/image.tar; fi
             - run: docker build -t odanado/pandoc .
             - run: mkdir -p ~/cache && docker save -o ~/cache/image.tar odanado/pandoc $(docker history -q pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
 
             - save_cache:
-                key: docker-cache-{{ .Branch }}-{{ checksum "~/cache/image.tar" }}
-                paths:
-                    - ~/cache
+                key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
+                paths: ~/cache/images.tar
 
     
     build-pdf:
@@ -28,11 +27,11 @@ jobs:
             - image: docker:17.05.0-ce-git
         steps:
             - checkout
-            - setup_remote_docker
+            - setup_remote_docker:
+                docker_layer_caching: true
             - restore_cache:
-                keys:
-                    - docker-cache-{{ .Branch }}
-                    - docker-cache
+                key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
+                path: ~/cache/images.tar
             - run: docker load -i ~/cache/image.tar
             - run: docker run --user=root --rm -it -v $PWD:/home/user/work odanado/pandoc run.sh make
             - store_artifacts:
