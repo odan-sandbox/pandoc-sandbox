@@ -14,7 +14,7 @@ jobs:
 
             - run: if test -d ~/cache; then docker load -i ~/cache/image.tar; fi
             - run: docker build -t odanado/pandoc .
-            - run: mkdir -p ~/cache && docker save -o ~/cache/image.tar odanado/pandoc $(docker history -q pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
+            - run: mkdir -p ~/cache && docker save -o ~/cache/image.tar odanado/pandoc $(docker history -q odanado/pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
 
             - save_cache:
                 key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
