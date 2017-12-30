@@ -11,17 +11,13 @@ jobs:
                 key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
                 path: ~/cache/image.tar
 
-            - run: ls
-            - run: pwd
-            - run: ls ~/
-            - run: ls ~/cache
             - run: if test -d ~/cache; then docker load -i ~/cache/image.tar; fi
             - run: docker build -t odanado/pandoc .
             - run: mkdir -p ~/cache && docker save -o ~/cache/image.tar odanado/pandoc $(docker history -q odanado/pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
 
             - save_cache:
                 key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
-                paths: ~/cache/image.tar
+                paths: ~/cache
 
     
     build-pdf:
@@ -33,7 +29,7 @@ jobs:
             - setup_remote_docker
             - restore_cache:
                 key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
-                path: ~/cache/image.tar
+                path: ~/cache
             - run: ls
             - run: pwd
             - run: ls ~/
