@@ -34,6 +34,13 @@ jobs:
             - store_artifacts:
                 path: ~/work/main.pdf
 
+    deploy-gh-pages:
+        working_directory: ~/work/build
+        machine: true
+        steps:
+            - run: ls
+
+
 workflows:
     version: 2
     flow:
@@ -42,3 +49,6 @@ workflows:
             - build-book:
                 requires:
                     - build 
+            - deploy-gh-pages:
+                requires:
+                    - build-book
