@@ -13,12 +13,28 @@ jobs:
                     - docker-cache
 
             - run: if test -d ~/cache; then docker load -i ~/cache/image.tar; fi
-            - run: docker build -t pandoc .
-            - run: mkdir -p ~/cache && docker save -o ~/cache/image.tar pandoc $(docker history -q pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
+            - run: docker build -t odanado/pandoc .
+            - run: mkdir -p ~/cache && docker save -o ~/cache/image.tar odanado/pandoc $(docker history -q pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
 
             - save_cache:
                 key: docker-cache-{{ .Branch }}-{{ checksum "~/cache/image.tar" }}
                 paths:
                     - ~/cache
 
-            - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` pandoc run.sh make
+    
+    build-pdf:
+        working_directory: /src
+        docker:
+            - image: odanado/pandoc
+        steps:
+            - setup_remote_docker
+            - run: docker run --user=root --rm -it -v $PWD:/home/user/work odanado/pandoc run.sh make
+
+workflows:
+    version: 2
+    flow:
+        jobs:
+            - build
+            - build-pdf:
+                requires:
+                    - build 
