@@ -31,7 +31,7 @@ jobs:
             - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc run.sh make
 
             - store_artifacts:
-                path: /src/main.pdf
+                path: ~/work/main.pdf
 
 workflows:
     version: 2
