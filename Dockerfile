@@ -28,10 +28,11 @@ RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
     fix-permissions $HOME
 USER $NB_USER
 
-RUN stack setup
 RUN mkdir -p $HOME/.stack/global-project
 ADD stack.yaml $HOME/.stack/global-project
-RUN stack install pandoc pandoc-citeproc pandoc-crossref
+RUN stack setup && \
+    stack install pandoc-1.19.2.4 pandoc-citeproc-0.10.5.1 pandoc-crossref-0.2.7.0 && \
+    rm -rf $HOME/.stack
 
 WORKDIR /home/user/work
 
