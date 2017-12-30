@@ -2,11 +2,9 @@ version: 2
 jobs:
     build:
         working_directory: /src
-        docker:
-            - image: docker:17.05.0-ce-git
+        machine: true
         steps:
             - checkout
-            - setup_remote_docker
             - restore_cache:
                 key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
                 path: ~/cache/image.tar
@@ -21,6 +19,7 @@ jobs:
 
     
     build-pdf:
+        working_directory: /src
         machine: true
         steps:
             - checkout
