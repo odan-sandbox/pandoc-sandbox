@@ -44,7 +44,13 @@ jobs:
         steps:
             - restore_cache:
                 key: build
-            - run: ls
+            - run: git init .
+            - run: git config --global user.name "circle ci"
+            - run: git config --global user.email "odan3240@gmail.com"
+            - run: git checkout -b gh-pages
+            - run: git add *.html
+            - run: git commit -m 'Update [ci skip]'
+            - run: git push -f git@github.com:odanado/pandoc-sandbox.git gh-pages
 
 
 workflows:
