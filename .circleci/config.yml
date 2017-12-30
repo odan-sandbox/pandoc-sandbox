@@ -34,10 +34,16 @@ jobs:
             - store_artifacts:
                 path: ~/work/main.pdf
 
+            - save_cache:
+                key: build
+                path: ~/work/build
+
     deploy-gh-pages:
         working_directory: ~/work/build
         machine: true
         steps:
+            - restore_cache:
+                key: build
             - run: ls
 
 
