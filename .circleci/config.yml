@@ -28,7 +28,7 @@ jobs:
                 path: ~/cache
 
             - run: docker load -i ~/cache/image.tar
-            - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc-sandbox run.sh make
+            - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc run.sh make
 
             - store_artifacts:
                 path: /src/main.pdf
