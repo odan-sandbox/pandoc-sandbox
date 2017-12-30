@@ -1,7 +1,7 @@
 version: 2
 jobs:
     build:
-        working_directory: /src
+        working_directory: ~/work
         machine: true
         steps:
             - checkout
@@ -19,7 +19,7 @@ jobs:
 
     
     build-pdf:
-        working_directory: /src
+        working_directory: ~/work
         machine: true
         steps:
             - checkout
