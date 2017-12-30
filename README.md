@@ -9,8 +9,8 @@ pandocで執筆環境を作る
 
 # pdfファイルの生成の仕方
 ```bash
-docker build . -t odanado/pandoc-sandbox
-docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc-sandbox run.sh make
+docker-compose pull
+make pdf
 ```
 
 うまくいけば `main.pdf` が生成されているはず
