@@ -22,20 +22,17 @@ jobs:
     
     build-pdf:
         working_directory: /src
-        docker:
-            - image: docker:17.05.0-ce-git
+        machine: true
         steps:
             - checkout
             - setup_remote_docker
             - restore_cache:
                 key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
                 path: ~/cache
+
             - run: docker load -i ~/cache/image.tar
-            - run: env
-            - run: ls
-            - run: docker run --user=root --rm -it -v $PWD:/home/user/work odanado/pandoc run.sh pwd
-            - run: docker run --user=root --rm -it -v $PWD:/home/user/work odanado/pandoc run.sh ls
             - run: docker run --user=root --rm -it -v $PWD:/home/user/work odanado/pandoc run.sh make
+
             - store_artifacts:
                 path: /src/main.pdf
 
