@@ -10,7 +10,7 @@ jobs:
                 docker_layer_caching: true
             - restore_cache:
                 key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
-                path: ~/cache/images.tar
+                path: ~/cache/image.tar
 
             - run: if test -d ~/cache; then docker load -i ~/cache/image.tar; fi
             - run: docker build -t odanado/pandoc .
@@ -18,7 +18,7 @@ jobs:
 
             - save_cache:
                 key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
-                paths: ~/cache/images.tar
+                paths: ~/cache/image.tar
 
     
     build-pdf:
@@ -31,7 +31,7 @@ jobs:
                 docker_layer_caching: true
             - restore_cache:
                 key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
-                path: ~/cache/images.tar
+                path: ~/cache/image.tar
             - run: docker load -i ~/cache/image.tar
             - run: docker run --user=root --rm -it -v $PWD:/home/user/work odanado/pandoc run.sh make
             - store_artifacts:
