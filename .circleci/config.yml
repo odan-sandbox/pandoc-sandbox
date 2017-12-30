@@ -21,7 +21,6 @@ jobs:
 
     
     build-pdf:
-        working_directory: /src
         machine: true
         steps:
             - checkout
