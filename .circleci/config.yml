@@ -6,7 +6,7 @@ jobs:
         steps:
             - checkout
             - restore_cache:
-                key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
+                key: docker-{{ checksum "Dockerfile" }}
                 path: ~/cache/image.tar
 
             - run: if test -d ~/cache; then docker load -i ~/cache/image.tar; fi
@@ -14,21 +14,22 @@ jobs:
             - run: mkdir -p ~/cache && docker save -o ~/cache/image.tar odanado/pandoc $(docker history -q odanado/pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
 
             - save_cache:
-                key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
+                key: docker-{{ checksum "Dockerfile" }}
                 paths: ~/cache
 
     
-    build-pdf:
+    build-book:
         working_directory: ~/work
         machine: true
         steps:
             - checkout
             - restore_cache:
-                key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
+                key: docker-{{ checksum "Dockerfile" }}
                 path: ~/cache
 
             - run: docker load -i ~/cache/image.tar
             - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc run.sh make
+            - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc run.sh make html
 
             - store_artifacts:
                 path: ~/work/main.pdf
@@ -38,6 +39,6 @@ workflows:
     flow:
         jobs:
             - build
-            - build-pdf:
+            - build-book:
                 requires:
                     - build 
