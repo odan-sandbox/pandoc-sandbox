@@ -36,7 +36,7 @@ jobs:
 
             - save_cache:
                 key: build
-                path: ~/work/build
+                paths: ~/work/build
 
     deploy-gh-pages:
         working_directory: ~/work/build
