@@ -32,9 +32,10 @@ jobs:
                 path: ~/cache
             - run: docker load -i ~/cache/image.tar
             - run: env
+            - run: ls
             - run: docker run --user=root --rm -it -v $PWD:/home/user/work odanado/pandoc run.sh pwd
             - run: docker run --user=root --rm -it -v $PWD:/home/user/work odanado/pandoc run.sh ls
-            - run: docker run --user=root --rm -it -v `pwd`:/home/user/work odanado/pandoc run.sh make
+            - run: docker run --user=root --rm -it -v $PWD:/home/user/work odanado/pandoc run.sh make
             - store_artifacts:
                 path: /src/main.pdf
 
