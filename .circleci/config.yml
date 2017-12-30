@@ -5,6 +5,8 @@ jobs:
         machine: true
         steps:
             - checkout
+            - run: pwd
+            - run: whoami
             - restore_cache:
                 key: docker-{{ .Branch }}-{{ checksum "Dockerfile" }}
                 path: ~/cache/image.tar
