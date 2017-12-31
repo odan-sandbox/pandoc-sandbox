@@ -23,15 +23,6 @@ jobs:
                     test -f ~/cache/texlive-image.tar && docker load -i ~/cache/texlive-image.tar
                     docker images odanado/book
             - run: make docker-build
-            
-            - run: make
-
-            - store_artifacts:
-                path: ~/work/main.pdf
-
-            - save_cache:
-                key: build
-                paths: ~/work/build
 
             - run:
                 name: save docker cache
@@ -51,6 +42,14 @@ jobs:
             - save_cache:
                 key: docker-texlive-{{ checksum "Dockerfile.texlive" }}
                 paths: ~/cache/texlive-image.tar
+            
+            - run: make docker-all
+            - store_artifacts:
+                path: ~/work/main.pdf
+            - save_cache:
+                key: build
+                paths: ~/work/build
+
 
     
     deploy-gh-pages:
