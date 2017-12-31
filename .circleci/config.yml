@@ -23,10 +23,9 @@ jobs:
                         docker load -i ~/cache/pandoc-image.tar;
                         docker load -i ~/cache/texlive-image.tar;
                     fi
-            - run: make docker
+            - run: make docker-build
             
-            - run: make pdf
-            - run: make html
+            - run: make
 
             - store_artifacts:
                 path: ~/work/main.pdf
