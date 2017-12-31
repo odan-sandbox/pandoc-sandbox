@@ -35,9 +35,8 @@ $(OUTDIR)/%.tex: %/*
 
 	$(eval BIB_FILE=$(DIR_NAME)/$(DIR_NAME).bib)
 	$(eval CITE_OPTION=$(shell if [ -f $(BIB_FILE) ]; then echo --bibliography=$(BIB_FILE); else echo ; fi))
-	$(eval CSL_OPTION=--csl ./chicago-author-date.csl)
 
-	$(call RUN, pandoc, pandoc $(MD_FILES) $(CITE_OPTION) $(CSL_OPTION) --filter pandoc-crossref -M "crossrefYaml=crossref_config.yaml" -o $@)
+	$(call RUN, pandoc, pandoc $(MD_FILES) $(CITE_OPTION) --filter pandoc-crossref -M "crossrefYaml=crossref_config.yaml" -o $@)
 
 tex: $(TEX_FILES)
 
@@ -55,7 +54,7 @@ $(OUTDIR)/%.html: %/*
 	$(eval BIB_FILE=$(DIR_NAME)/$(DIR_NAME).bib)
 	$(eval CITE_OPTION=$(shell if [ -f $(BIB_FILE) ]; then echo --bibliography=$(BIB_FILE); else echo ; fi))
 
-	$(eval RUN, pandoc, pandoc $(MD_FILES) $(CITE_OPTION) --filter pandoc-crossref -M "crossrefYaml=crossref_config.yaml" -o $@)
+	$(call RUN, pandoc, pandoc $(MD_FILES) $(CITE_OPTION) --filter pandoc-crossref -M "crossrefYaml=crossref_config.yaml" -o $@)
 
 html: $(HTML_FILES)
 
