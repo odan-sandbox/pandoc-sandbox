@@ -18,9 +18,7 @@ endef
 
 GET_DIR_NAME=$(patsubst %/,%,$(word 1, $(dir $1)))
 
-all:
-	pdf
-	html
+all: tex html pdf
 
 docker-build:
 	docker-compose build base
