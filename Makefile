@@ -20,13 +20,6 @@ GET_DIR_NAME=$(patsubst %/,%,$(word 1, $(dir $1)))
 
 all: tex html pdf
 
-docker-build:
-	docker-compose build base
-	docker-compose build pandoc texlive
-
-docker-pull:
-	docker-compose pull
-
 $(OUTDIR)/%.tex: %/*
 	mkdir -p $(OUTDIR)
 	$(eval DIR_NAME=$(call GET_DIR_NAME,$^))
@@ -36,13 +29,13 @@ $(OUTDIR)/%.tex: %/*
 	$(eval BIB_FILE=$(DIR_NAME)/$(DIR_NAME).bib)
 	$(eval CITE_OPTION=$(shell if [ -f $(BIB_FILE) ]; then echo --bibliography=$(BIB_FILE); else echo ; fi))
 
-	$(call RUN, pandoc, pandoc $(MD_FILES) $(CITE_OPTION) --filter pandoc-crossref -M "crossrefYaml=crossref_config.yaml" -o $@)
+	pandoc $(MD_FILES) $(CITE_OPTION) --filter pandoc-crossref -M "crossrefYaml=crossref_config.yaml" -o $@
 
 tex: $(TEX_FILES)
 
 pdf: $(TEX_FILES)
-	$(call RUN, texlive, ptex2pdf -l -ot -kanji=utf8 main)
-	$(call RUN, texlive, ptex2pdf -l -ot -kanji=utf8 main)
+	ptex2pdf -l -ot -kanji=utf8 main
+	ptex2pdf -l -ot -kanji=utf8 main
 
 
 $(OUTDIR)/%.html: %/*
@@ -54,9 +47,28 @@ $(OUTDIR)/%.html: %/*
 	$(eval BIB_FILE=$(DIR_NAME)/$(DIR_NAME).bib)
 	$(eval CITE_OPTION=$(shell if [ -f $(BIB_FILE) ]; then echo --bibliography=$(BIB_FILE); else echo ; fi))
 
-	$(call RUN, pandoc, pandoc $(MD_FILES) $(CITE_OPTION) --filter pandoc-crossref -M "crossrefYaml=crossref_config.yaml" -o $@)
+	pandoc $(MD_FILES) $(CITE_OPTION) --filter pandoc-crossref -M "crossrefYaml=crossref_config.yaml" -o $@
 
 html: $(HTML_FILES)
+
+docker-build:
+	docker-compose build base
+	docker-compose build pandoc texlive
+
+docker-pull:
+	docker-compose pull
+
+docker-all: docker-tex docker-html docker-pdf
+
+docker-tex:
+	$(call RUN,pandoc,make tex)
+
+docker-html:
+	$(call RUN,pandoc,make html)
+
+docker-pdf:
+	$(call RUN,texlive,make pdf)
+
 
 clean:
 	- rm -rf main.bbl main.aux main.blg main.bcf main.log main.dvi main.pdf main.run.xml	
@@ -64,4 +76,6 @@ clean:
 	- rm -rf $(OUTDIR)
 
 .PHONY:
-	all docker-build docker-pull pdf html clean
+	docker-build docker-pull
+	docker-all docker-tex docker-html docker-pdf
+	all tex pdf html clean
