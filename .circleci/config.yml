@@ -28,9 +28,9 @@ jobs:
                 name: save docker cache
                 command: |
                     mkdir -p ~/cache
-                    docker -save -o ~/cache/base-image.tar odanado/book:base
-                    docker -save -o ~/cache/pandoc-image.tar odanado/book:pandoc
-                    docker -save -o ~/cache/texlive-image.tar odanado/book:texlive
+                    docker save -o ~/cache/base-image.tar odanado/book:base
+                    docker save -o ~/cache/pandoc-image.tar odanado/book:pandoc
+                    docker save -o ~/cache/texlive-image.tar odanado/book:texlive
 
             - save_cache:
                 key: docker-{{ checksum "Dockerfile.base" }}
