@@ -28,9 +28,9 @@ jobs:
                 name: save docker cache
                 command: |
                     mkdir -p ~/cache
-                    docker save -o ~/cache/base-image.tar odanado/book:base
-                    docker save -o ~/cache/pandoc-image.tar odanado/book:pandoc
-                    docker save -o ~/cache/texlive-image.tar odanado/book:texlive
+                    docker save -o ~/cache/base-image.tar odanado/book:base $(docker history -q odanado/book:base | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
+                    docker save -o ~/cache/pandoc-image.tar odanado/book:pandoc $(docker history -q odanado/book:pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
+                    docker save -o ~/cache/texlive-image.tar odanado/book:texlive $(docker history -q odanado/book:texlive | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
                     docker images odanado/book
 
             - save_cache:
