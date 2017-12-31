@@ -24,6 +24,17 @@ jobs:
                         docker load -i ~/cache/texlive-image.tar;
                     fi
             - run: make docker
+            
+            - run: make pdf
+            - run: make html
+
+            - store_artifacts:
+                path: ~/work/main.pdf
+
+            - save_cache:
+                key: build
+                paths: ~/work/build
+
             - run:
                 name: save docker cache
                 command: |
@@ -43,34 +54,6 @@ jobs:
                 paths: ~/cache
 
     
-    build-book:
-        working_directory: ~/work
-        machine: true
-        steps:
-            - checkout
-            - restore_cache:
-                key: docker-{{ checksum "Dockerfile.pandoc" }}
-                path: ~/cache
-            - restore_cache:
-                key: docker-{{ checksum "Dockerfile.texlive" }}
-                path: ~/cache
-
-            - run:
-                name: load docker cache
-                command: |
-                    docker load -i ~/cache/pandoc-image.tar
-                    docker load -i ~/cache/texlive-image.tar
-            
-            - run: make pdf
-            - run: make html
-
-            - store_artifacts:
-                path: ~/work/main.pdf
-
-            - save_cache:
-                key: build
-                paths: ~/work/build
-
     deploy-gh-pages:
         working_directory: ~/work/build
         machine: true
@@ -91,12 +74,9 @@ workflows:
     flow:
         jobs:
             - build
-            - build-book:
-                requires:
-                    - build 
             - deploy-gh-pages:
                 requires:
-                    - build-book
+                    - build
                 filters:
                     branches:
                         only: master
