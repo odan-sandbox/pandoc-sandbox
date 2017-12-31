@@ -18,11 +18,9 @@ jobs:
             - run:
                 name: load docker cache
                 command: |
-                    if test -d ~/cache; then
-                        docker load -i ~/cache/base-image.tar;
-                        docker load -i ~/cache/pandoc-image.tar;
-                        docker load -i ~/cache/texlive-image.tar;
-                    fi
+                    test -f ~/cache/base-image.tar && docker load -i ~/cache/base-image.tar;
+                    test -f ~/cache/pandoc-image.tar && docker load -i ~/cache/pandoc-image.tar;
+                    test -f ~/cache/texlive-image.tar && docker load -i ~/cache/texlive-image.tar;
             - run: make docker-build
             
             - run: make
