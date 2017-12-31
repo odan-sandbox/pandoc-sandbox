@@ -47,7 +47,7 @@ jobs:
             - store_artifacts:
                 path: ~/work/main.pdf
             - save_cache:
-                key: build
+                key: build-{{ checksum "~/work/main.pdf"}}
                 paths: ~/work/build
 
 
