@@ -6,13 +6,13 @@ jobs:
         steps:
             - checkout
             - restore_cache:
-                key: docker-{{ checksum "Dockerfile.base" }}
+                key: docker-base-{{ checksum "Dockerfile.base" }}
                 path: ~/cache/base-image.tar
             - restore_cache:
-                key: docker-{{ checksum "Dockerfile.pandoc" }}
+                key: docker-pandoc-{{ checksum "Dockerfile.pandoc" }}
                 path: ~/cache/pandoc-image.tar
             - restore_cache:
-                key: docker-{{ checksum "Dockerfile.texlive" }}
+                key: docker-texlive-{{ checksum "Dockerfile.texlive" }}
                 path: ~/cache/texlive-image.tar
 
             - run:
@@ -44,14 +44,14 @@ jobs:
                     docker save -o ~/cache/texlive-image.tar odanado/book:texlive
 
             - save_cache:
-                key: docker-{{ checksum "Dockerfile.base" }}
-                paths: ~/cache
+                key: docker-base-{{ checksum "Dockerfile.base" }}
+                paths: ~/cache/base-image.tar
             - save_cache:
-                key: docker-{{ checksum "Dockerfile.pandoc" }}
-                paths: ~/cache
+                key: docker-pandoc-{{ checksum "Dockerfile.pandoc" }}
+                paths: ~/cache/pandoc-image.tar
             - save_cache:
-                key: docker-{{ checksum "Dockerfile.texlive" }}
-                paths: ~/cache
+                key: docker-texlive-{{ checksum "Dockerfile.texlive" }}
+                paths: ~/cache/texlive-image.tar
 
     
     deploy-gh-pages:
