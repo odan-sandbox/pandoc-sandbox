@@ -9,8 +9,8 @@ pandocで執筆環境を作る
 
 # pdfファイルの生成の仕方
 ```bash
-docker-compose pull
-make pdf
+make docker-pull
+make
 ```
 
 うまくいけば `main.pdf` が生成されているはず

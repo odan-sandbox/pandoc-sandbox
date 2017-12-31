@@ -16,20 +16,30 @@ define RUN
 	docker-compose run --user=root --rm -v $(PWD):/home/user/work -e NB_UID=$(NB_UID) -e NB_GID=$(NB_GID) $1 $2
 endef
 
-docker:
+GET_DIR_NAME=$(patsubst %/,%,$(word 1, $(dir $1)))
+
+all:
+	pdf
+	html
+
+docker-build:
 	docker-compose build base
 	docker-compose build
 
+docker-pull:
+	docker-compose pull
+
 $(OUTDIR)/%.tex: %/*
 	mkdir -p $(OUTDIR)
-	$(eval DIR_NAME=$(word 1, $(dir $^)))
+	$(eval DIR_NAME=$(call GET_DIR_NAME,$^))
 
 	$(eval MD_FILES=$(sort $(wildcard $(DIR_NAME)/*.md)))
 
 	$(eval BIB_FILE=$(DIR_NAME)/$(DIR_NAME).bib)
 	$(eval CITE_OPTION=$(shell if [ -f $(BIB_FILE) ]; then echo --bibliography=$(BIB_FILE); else echo ; fi))
+	$(eval CSL_OPTION=--csl ./chicago-author-date.csl)
 
-	$(call RUN, pandoc, pandoc $(MD_FILES) $(CITE_OPTION) --filter pandoc-crossref -M "crossrefYaml=crossref_config.yaml" -o $@)
+	$(call RUN, pandoc, pandoc $(MD_FILES) $(CITE_OPTION) $(CSL_OPTION) --filter pandoc-crossref -M "crossrefYaml=crossref_config.yaml" -o $@)
 
 tex: $(TEX_FILES)
 
@@ -40,7 +50,7 @@ pdf: $(TEX_FILES)
 
 $(OUTDIR)/%.html: %/*
 	mkdir -p $(OUTDIR)
-	$(eval DIR_NAME=$(word 1, $(dir $^)))
+	$(eval DIR_NAME=$(call GET_DIR_NAME,$^))
 
 	$(eval MD_FILES=$(sort $(wildcard $(DIR_NAME)/*.md)))
 
@@ -57,4 +67,4 @@ clean:
 	- rm -rf $(OUTDIR)
 
 .PHONY:
-	docker pdf html clean
+	all docker-build docker-pull pdf html clean
