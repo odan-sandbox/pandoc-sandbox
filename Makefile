@@ -24,7 +24,7 @@ all:
 
 docker-build:
 	docker-compose build base
-	docker-compose build
+	docker-compose build pandoc texlive
 
 docker-pull:
 	docker-compose pull

@@ -40,6 +40,7 @@ jobs:
                     docker save -o ~/cache/base-image.tar odanado/book:base
                     docker save -o ~/cache/pandoc-image.tar odanado/book:pandoc
                     docker save -o ~/cache/texlive-image.tar odanado/book:texlive
+                    docker images odanado/book
 
             - save_cache:
                 key: docker-base-{{ checksum "Dockerfile.base" }}
