@@ -22,15 +22,17 @@ jobs:
                     test -f ~/cache/pandoc-image.tar && docker load -i ~/cache/pandoc-image.tar
                     test -f ~/cache/texlive-image.tar && docker load -i ~/cache/texlive-image.tar
                     docker images odanado/book
-            - run: make docker-build
+            - run: docker build -f Dockerfile.base -t odanado/book:base --cache-from odanado/book:base .
+            - run: docker build -f Dockerfile.pandoc -t odanado/book:pandoc --cache-from odanado/book:pandoc .
+            - run: docker build -f Dockerfile.texlive -t odanado/book:texlive --cache-from odanado/book:texlive .
 
             - run:
                 name: save docker cache
                 command: |
                     mkdir -p ~/cache
-                    docker save -o ~/cache/base-image.tar odanado/book:base $(docker history -q odanado/book:base | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
-                    docker save -o ~/cache/pandoc-image.tar odanado/book:pandoc $(docker history -q odanado/book:pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
-                    docker save -o ~/cache/texlive-image.tar odanado/book:texlive $(docker history -q odanado/book:texlive | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
+                    docker save -o ~/cache/base-image.tar odanado/book:base 
+                    docker save -o ~/cache/pandoc-image.tar odanado/book:pandoc 
+                    docker save -o ~/cache/texlive-image.tar odanado/book:texlive 
                     docker images odanado/book
 
             - save_cache:
