@@ -16,15 +16,28 @@ jobs:
                 path: ~/cache/texlive-image.tar
 
             - run:
-                name: load docker cache
                 command: |
-                    test -f ~/cache/base-image.tar && docker load -i ~/cache/base-image.tar
-                    test -f ~/cache/pandoc-image.tar && docker load -i ~/cache/pandoc-image.tar
-                    test -f ~/cache/texlive-image.tar && docker load -i ~/cache/texlive-image.tar
-                    docker images odanado/book
-            - run: docker build -f Dockerfile.base -t odanado/book:base --cache-from odanado/book:base .
-            - run: docker build -f Dockerfile.pandoc -t odanado/book:pandoc --cache-from odanado/book:pandoc .
-            - run: docker build -f Dockerfile.texlive -t odanado/book:texlive --cache-from odanado/book:texlive .
+                    if test -f ~/cache/base-image.tar then
+                        docker load -i ~/cache/base-image.tar
+                    else
+                        docker-compose build base
+                    fi
+
+            - run:
+                command: |
+                    if test -f ~/cache/pandoc-image.tar then
+                        docker load -i ~/cache/pandoc-image.tar
+                    else
+                        docker-compose build pandoc
+                    fi
+
+            - run:
+                command: |
+                    if test -f ~/cache/texlive-image.tar then
+                        docker load -i ~/cache/texlive-image.tar
+                    else
+                        docker-compose build texlive
+                    fi
 
             - run:
                 name: save docker cache
