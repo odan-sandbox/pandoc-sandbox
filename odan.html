@@ -1,0 +1,49 @@
+<p>この記事は、 <a href="https://adventar.org/calendars/2102">OIT Advent Calendar 2017</a>の2日目の記事です。</p>
+<h1 id="前置き">前置き</h1>
+<p>元々OIT Advent Calendarに弊学の梅田キャンパスを「がっこうたんけんした話」を書くつもりでしたが外が寒くてダメでした．何か記事を書くネタを考えたところ最近zshを使い始めたのでそのことを書くことにしました(偶然にも2日連続シェル環境の記事になった)．</p>
+<h1 id="dotfiles">dotfiles</h1>
+<p>最初に貼っておくとdotfilesは以下にあります．</p>
+<p>[https://github.com/odanado/dotfiles:embed:cite]</p>
+<h1 id="docker">Docker</h1>
+<p>また以下のコマンド群をコピー&amp;ペーストするだけで僕のzshを試せます！</p>
+<pre><code>docker run --rm -it odanado/zsh zsh
+./install.sh &amp;&amp; ./deploy.sh
+source ~/.zshenv &amp;&amp; source ~/.zshrc</code></pre>
+<h1 id="動機">動機</h1>
+<p>周りに影響されてfishを触ってみたところ，デフォルトで入っているauto suggestion機能がとても便利に感じました．ほぼ何もカスタマイズされてないbashで作業をするのは目に見えない時間を失っているようで嫌だったので，bashを辞めることを決意しました．<br />
+乗り換えるshellを選ぶ上で前から気になっていたzshと，周りの人が使っているfishで悩みましたが，zshの方が色々カスタマイズできてネット上に情報が多そうだったので，zshを選びました．</p>
+<h1 id="プラグインマネージャ">プラグインマネージャ</h1>
+<p>まず最初にプラグインマネージャを選びました． <code>Prezto</code>， <code>oh-my-zsh</code>， <code>Antigen</code> などもありましたが， <code>zplug</code> がいいとの情報が多かったので <code>zplug</code> を選択しました．後述しますが実際使ってみて最高でした．</p>
+<h1 id="インストールしたプラグイン">インストールしたプラグイン</h1>
+<h2 id="zsh-users系">zsh-users系</h2>
+<p>目についたやつを入れていきました．</p>
+<ul>
+<li>zsh-users/zsh-syntax-highlighting</li>
+<li>zsh-users/zsh-completions</li>
+<li>zsh-users/zsh-autosuggestions</li>
+<li>zsh-users/zsh-history-substring-search</li>
+</ul>
+<h2 id="peco">peco</h2>
+<p>pecoはリアルタイムgrepみたいなコマンドです．GO言語で実装されていて厳密にはzshのプラグインというわけではないんですが， <code>zplug</code> だとこういったものも <code>zplug &quot;peco/peco&quot;, as:command, from:gh-r</code> でインストールすることが可能です．この柔軟性が最高だと思いました．</p>
+<h2 id="ghq">ghq</h2>
+<p>これまでは <code>~/git</code> 以下にひたすらGit cloneしたリポジトリを集めてましたが，ghqを使えば管理が楽になります．これも <code>zplug</code> を使って <code>zplug &quot;motemen/ghq&quot;, as:command, from:gh-r</code> でインストールできます．</p>
+<h2 id="anyframe">anyframe</h2>
+<p>pecoと連携するためのプラグインです．ほしい関数が用意されているので使うのにキーバインドやaliasを設定するだけで使えるようになって便利．</p>
+<h2 id="powerline">powerline</h2>
+<p>ターミナルのステータスバー？ をかっこよくするやつ． <code>zplug</code> は他人のzshファイルを読み込むこともできて， <code>zplug &quot;powerline/powerline&quot;, use:&quot;powerline/bindings/zsh/powerline.zsh&quot;</code> でインストール可能です(ほんと最高)． デフォルトのconfigだとかっこいい三角形を表示するためにpowerline用のフォントをインストールする必要があります．しかし三角形を表示するためにフォントをインストールのは大げさだと思い，configで<code>&quot;default_top_theme&quot;: &quot;ascii&quot;</code> としています．他にも設定を弄って最終的にこんな表示になりました． [f:id:odan3240:20171202222956p:plain]</p>
+<h1 id="その他設定">その他設定</h1>
+<h2 id="ヒストリ">ヒストリ</h2>
+<p>どうやらデフォルトではヒストリを保存しないぽいので設定しました．</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="bu">export</span> <span class="va">HISTFILE=${HOME}</span>/.zsh_history
+<span class="bu">export</span> <span class="va">HISTSIZE=</span>1000
+<span class="bu">export</span> <span class="va">SAVEHIST=</span>500000
+<span class="ex">setopt</span> hist_ignore_all_dups <span class="co"># 同じコマンドをヒストリに保存しない</span>
+<span class="ex">setopt</span> hist_reduce_blanks <span class="co"># 無駄なスペースを消してヒストリに保存する</span>
+<span class="ex">setopt</span> share_history <span class="co"># ヒストリを共有</span></code></pre></div>
+<h2 id="ssh-agent関係">ssh-agent関係</h2>
+<p>tmux内でもssh-agentが使えるように以下の記事の設定をコピー&amp;ペーストしました．</p>
+<p>[https://qiita.com/sonots/items/2d7950a68da0a02ba7e4:embed:cite]</p>
+<h1 id="ciとか">CIとか</h1>
+<p>Travis CIとDockerを使ってGitHubにpushされるたび，<code>zplug</code>でのプラグインのインストールが成功することと，<code>zshenv</code>及び<code>zshrc</code>の読み込みが成功することをテストするようにしました．本当はちゃんど動作するところまでテストしたいと思っていましたが方法がわからず，ないよりマシの精神でインストールとロードまでをテストしています．この辺の知識を持っている方がいれば教えていただきたいです(あとneovimの起動もテストしたい)．</p>
+<h1 id="おわりに">おわりに</h1>
+<p>bashからzshに乗り換えてインストールしたプラグインや設定を紹介しました．今回zshに乗り換えたことでシェル環境の快適度が増して個人的にとても満足しています． zshにはこんな便利なプラグインがあるよ！ とかこの設定書くと便利だよ！ などの情報をお持ちの方はぜひ教えてください．</p>
