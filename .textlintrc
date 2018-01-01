@@ -9,7 +9,8 @@
                 "periodMark": "。",
                 "allowPeriodMarks": ["．"]
             }
-        }
+        },
+        "spellcheck-tech-word": true
     },
     "filters": {
         "comments": true
