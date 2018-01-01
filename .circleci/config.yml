@@ -17,7 +17,7 @@ jobs:
 
             - run:
                 command: |
-                    if test -f ~/cache/base-image.tar then
+                    if [ -f ~/cache/base-image.tar ]; then
                         docker load -i ~/cache/base-image.tar
                     else
                         docker-compose build base
@@ -25,7 +25,7 @@ jobs:
 
             - run:
                 command: |
-                    if test -f ~/cache/pandoc-image.tar then
+                    if [ -f ~/cache/pandoc-image.tar ]; then
                         docker load -i ~/cache/pandoc-image.tar
                     else
                         docker-compose build pandoc
@@ -33,7 +33,7 @@ jobs:
 
             - run:
                 command: |
-                    if test -f ~/cache/texlive-image.tar then
+                    if [ -f ~/cache/texlive-image.tar ]; then
                         docker load -i ~/cache/texlive-image.tar
                     else
                         docker-compose build texlive
