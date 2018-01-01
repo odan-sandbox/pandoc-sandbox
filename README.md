@@ -10,7 +10,7 @@ pandocで執筆環境を作る
 # pdfファイルの生成の仕方
 ```bash
 make docker-pull
-make
+make docker-all
 ```
 
 うまくいけば `main.pdf` が生成されているはず

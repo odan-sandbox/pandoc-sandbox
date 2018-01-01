@@ -5,6 +5,7 @@ MD_DIRS:=intro odan code_test
 OUTDIR:=build
 TEX_FILES:=$(foreach dir, $(MD_DIRS), $(OUTDIR)/$(dir).tex)
 HTML_FILES:=$(foreach dir, $(MD_DIRS), $(OUTDIR)/$(dir).html)
+ALL_MD_FILES:=$(foreach dir, $(MD_DIRS), $(sort $(wildcard $(dir)/*.md)))
 TARGET:=main.pdf
 
 
@@ -18,7 +19,16 @@ endef
 
 GET_DIR_NAME=$(patsubst %/,%,$(word 1, $(dir $1)))
 
-all: tex html pdf
+all: textlint tex html pdf
+
+textlint: $(ALL_MD_FILES)
+	textlint -f unix $(ALL_MD_FILES)
+
+textlint-fix: $(ALL_MD_FILES)
+	textlint --fix $(ALL_MD_FILES)
+
+textlint-diff:
+	textlint --fix --dry-run --format diff $(ALL_MD_FILES)
 
 $(OUTDIR)/%.tex: %/*
 	mkdir -p $(OUTDIR)
@@ -53,12 +63,21 @@ html: $(HTML_FILES)
 
 docker-build:
 	docker-compose build base
-	docker-compose build pandoc texlive
+	docker-compose build pandoc texlive textlint
 
 docker-pull:
 	docker-compose pull
 
-docker-all: docker-tex docker-html docker-pdf
+docker-all: docker-textlint docker-tex docker-html docker-pdf
+
+docker-textlint:
+	$(call RUN,textlint,make textlint)
+
+docker-textlint-fix:
+	$(call RUN,textlint,make textlint-fix)
+
+docker-textlint-diff:
+	$(call RUN,textlint,make textlint-diff)
 
 docker-tex:
 	$(call RUN,pandoc,make tex)

@@ -17,3 +17,9 @@ services:
         build:
             context: .
             dockerfile: Dockerfile.pandoc
+
+    textlint:
+        image: odanado/book:textlint
+        build:
+            context: .
+            dockerfile: Dockerfile.textlint

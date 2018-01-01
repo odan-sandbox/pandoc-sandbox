@@ -14,6 +14,9 @@ jobs:
             - restore_cache:
                 key: docker-texlive-{{ checksum "Dockerfile.texlive" }}-{{ checksum "Dockerfile.base" }}
                 path: ~/cache/texlive-image.tar
+            - restore_cache:
+                key: docker-texlive-{{ checksum "Dockerfile.textlint" }}-{{ checksum "Dockerfile.base" }}
+                path: ~/cache/textlint-image.tar
 
             - run:
                 command: |
@@ -40,12 +43,22 @@ jobs:
                     fi
 
             - run:
+                command: |
+                    if [ -f ~/cache/textlint-image.tar ]; then
+                        docker load -i ~/cache/textlint-image.tar
+                    else
+                        docker-compose build textlint
+                    fi
+
+
+            - run:
                 name: save docker cache
                 command: |
                     mkdir -p ~/cache
                     docker save -o ~/cache/base-image.tar odanado/book:base 
                     docker save -o ~/cache/pandoc-image.tar odanado/book:pandoc 
                     docker save -o ~/cache/texlive-image.tar odanado/book:texlive 
+                    docker save -o ~/cache/textlint-image.tar odanado/book:textlint 
                     docker images odanado/book
 
             - save_cache:
@@ -57,6 +70,9 @@ jobs:
             - save_cache:
                 key: docker-texlive-{{ checksum "Dockerfile.texlive" }}-{{ checksum "Dockerfile.base" }}
                 paths: ~/cache/texlive-image.tar
+            - save_cache:
+                key: docker-textlint-{{ checksum "Dockerfile.textlint" }}-{{ checksum "Dockerfile.base" }}
+                paths: ~/cache/textlint-image.tar
             
             - run: make docker-all
             - store_artifacts:
