@@ -19,7 +19,7 @@ endef
 
 GET_DIR_NAME=$(patsubst %/,%,$(word 1, $(dir $1)))
 
-all: textlin tex html pdf
+all: textlint tex html pdf
 
 textlint: $(ALL_MD_FILES)
 	textlint -f unix $(ALL_MD_FILES)
