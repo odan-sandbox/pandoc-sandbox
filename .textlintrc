@@ -8,7 +8,11 @@
             "ja-no-mixed-period": {
                 "periodMark": "。",
                 "allowPeriodMarks": ["．"]
-            }
+            },
+            "no-doubled-joshi": {
+                "separatorChars": ["。","?","!","？","！","．"]
+            },
+            "no-doubled-conjunctive-particle-ga": false
         },
         "spellcheck-tech-word": true
     },
