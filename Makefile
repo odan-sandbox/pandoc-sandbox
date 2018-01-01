@@ -24,6 +24,12 @@ all: textlint tex html pdf
 textlint: $(ALL_MD_FILES)
 	textlint -f unix $(ALL_MD_FILES)
 
+textlint-fix: $(ALL_MD_FILES)
+	textlint --fix $(ALL_MD_FILES)
+
+textlint-diff:
+	textlint --fix --dry-run --format diff $(ALL_MD_FILES)
+
 $(OUTDIR)/%.tex: %/*
 	mkdir -p $(OUTDIR)
 	$(eval DIR_NAME=$(call GET_DIR_NAME,$^))
@@ -66,6 +72,12 @@ docker-all: docker-textlint docker-tex docker-html docker-pdf
 
 docker-textlint:
 	$(call RUN,textlint,make textlint)
+
+docker-textlint-fix:
+	$(call RUN,textlint,make textlint-fix)
+
+docker-textlint-diff:
+	$(call RUN,textlint,make textlint-diff)
 
 docker-tex:
 	$(call RUN,pandoc,make tex)
