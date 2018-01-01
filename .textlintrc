@@ -4,6 +4,10 @@
             "no-exclamation-question-mark": false,
             "sentence-length": {
                 "max" : 500
+            },
+            "ja-no-mixed-period": {
+                "periodMark": "。",
+                "allowPeriodMarks": ["．"]
             }
         }
     },
