@@ -6,38 +6,67 @@ jobs:
         steps:
             - checkout
             - restore_cache:
-                key: docker-{{ checksum "Dockerfile" }}
-                path: ~/cache/image.tar
+                key: docker-base-{{ checksum "Dockerfile.base" }}
+                path: ~/cache/base-image.tar
+            - restore_cache:
+                key: docker-pandoc-{{ checksum "Dockerfile.pandoc" }}-{{ checksum "Dockerfile.base" }}
+                path: ~/cache/pandoc-image.tar
+            - restore_cache:
+                key: docker-texlive-{{ checksum "Dockerfile.texlive" }}-{{ checksum "Dockerfile.base" }}
+                path: ~/cache/texlive-image.tar
 
-            - run: if test -d ~/cache; then docker load -i ~/cache/image.tar; fi
-            - run: docker build -t odanado/pandoc .
-            - run: mkdir -p ~/cache && docker save -o ~/cache/image.tar odanado/pandoc $(docker history -q odanado/pandoc | tail -n +2 | grep -v \<missing\> | tr '\n' ' ')
+            - run:
+                command: |
+                    if [ -f ~/cache/base-image.tar ]; then
+                        docker load -i ~/cache/base-image.tar
+                    else
+                        docker-compose build base
+                    fi
+
+            - run:
+                command: |
+                    if [ -f ~/cache/pandoc-image.tar ]; then
+                        docker load -i ~/cache/pandoc-image.tar
+                    else
+                        docker-compose build pandoc
+                    fi
+
+            - run:
+                command: |
+                    if [ -f ~/cache/texlive-image.tar ]; then
+                        docker load -i ~/cache/texlive-image.tar
+                    else
+                        docker-compose build texlive
+                    fi
+
+            - run:
+                name: save docker cache
+                command: |
+                    mkdir -p ~/cache
+                    docker save -o ~/cache/base-image.tar odanado/book:base 
+                    docker save -o ~/cache/pandoc-image.tar odanado/book:pandoc 
+                    docker save -o ~/cache/texlive-image.tar odanado/book:texlive 
+                    docker images odanado/book
 
             - save_cache:
-                key: docker-{{ checksum "Dockerfile" }}
-                paths: ~/cache
-
-    
-    build-book:
-        working_directory: ~/work
-        machine: true
-        steps:
-            - checkout
-            - restore_cache:
-                key: docker-{{ checksum "Dockerfile" }}
-                path: ~/cache
-
-            - run: docker load -i ~/cache/image.tar
-            - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc run.sh make
-            - run: docker run --user=root --rm -it -v $PWD:/home/user/work -e NB_UID=`id -u` -e NB_GID=`id -g` odanado/pandoc run.sh make html
-
+                key: docker-base-{{ checksum "Dockerfile.base" }}
+                paths: ~/cache/base-image.tar
+            - save_cache:
+                key: docker-pandoc-{{ checksum "Dockerfile.pandoc" }}-{{ checksum "Dockerfile.base" }}
+                paths: ~/cache/pandoc-image.tar
+            - save_cache:
+                key: docker-texlive-{{ checksum "Dockerfile.texlive" }}-{{ checksum "Dockerfile.base" }}
+                paths: ~/cache/texlive-image.tar
+            
+            - run: make docker-all
             - store_artifacts:
                 path: ~/work/main.pdf
-
             - save_cache:
-                key: build
+                key: build-{{ checksum "~/work/main.pdf"}}
                 paths: ~/work/build
 
+
+    
     deploy-gh-pages:
         working_directory: ~/work/build
         machine: true
@@ -58,12 +87,9 @@ workflows:
     flow:
         jobs:
             - build
-            - build-book:
-                requires:
-                    - build 
             - deploy-gh-pages:
                 requires:
-                    - build-book
+                    - build
                 filters:
                     branches:
                         only: master
