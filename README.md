@@ -6,6 +6,7 @@ pandocで執筆環境を作る
 - `poyo` 以下に `poyo.md` という名前のmarkdownファイルを作る
 - `Makefile` の MD_DIRS に `poyo` を追加する
 - `main.tex` に `\input{build/poyo}` を追加する
+- inputの1行上に `\chapter{タイトル名}` を追加する
 
 # pdfファイルの生成の仕方
 ```bash
