@@ -1,5 +1,5 @@
 # ここにpdf化したいmarkdownが含まれるディレクトリを指定してください
-MD_DIRS:=intro odan code_test
+MD_DIRS:=intro odan code_test create-blog-vuejs
 
 # 以下触らないこと
 OUTDIR:=build

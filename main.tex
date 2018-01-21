@@ -1,4 +1,4 @@
-\documentclass[10.5pt,a4paper]{jarticle}
+\documentclass[10.5pt,a4paper]{jsbook}
 %
 \PassOptionsToPackage{dvipdfmx}{graphicx}
 
@@ -12,7 +12,6 @@
 \usepackage{tabularx}
 \usepackage[utf8]{inputenc}
 
-\usepackage{main}
 \usepackage{syntax}
 
 % ref: https://qiita.com/Selene-Misso/items/6c27a4a0947f10af3119
@@ -24,16 +23,25 @@
 
 \begin{document}
 \maketitle
+\tableofcontents
 
+\chapter{intro}
 \input{build/intro}
 
 \newpage
 
+\chapter{bashからzshに乗り換えた話}
 \input{build/odan}
 
 \newpage
 
+\chapter{code\_test}
 \input{build/code_test}
+
+\newpage
+
+\chapter{eliza君のやつ}
+\input{build/create-blog-vuejs}
 
 
 \end{document}
